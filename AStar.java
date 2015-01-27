@@ -112,6 +112,59 @@ public class AStar {
 		}
 		return boardInOrder;
 	}
+	
+		//this returns the h1 value for a given board, as defined by AIMA (the number of misplaced tiles)
+	public int heuristic1(){
+		int[] CORRECT_ORDER = {0,1,2,3,4,5,6,7,8,9};
+		int[] current_order = this.orderBoard();
+		int n = 0; //number out of order.
+		for(int i = 0;i < current_order.length; i++){
+			if(current_order[i]!=0){ //don't check if blank space is in order.
+				if(current_order[i]!=CORRECT_ORDER[i]){
+					n++;
+				}
+			}
+		}
+
+
+		return n;
+	}
+	//finds the row and column for correct location of n.
+	private int[] rowAndCol(int n){
+		int[] rowCol = new int[2];
+		int[][] CORRECT_BOARD = {{0,1,2},{3,4,5},{6,7,8}};
+		for(int i =0; i < size; i ++){
+			for(int j = 0; j < size; j++){
+				if(CORRECT_BOARD[i][j]==n){
+					rowCol[0]=i; rowCol[1]=j;
+				}
+			}
+		}
+		return rowCol;
+	}
+
+	//returns the h2 value for a given board, as defined by AIMA (manhatten score)
+	public int heuristic2(){
+		int[][] CORRECT_BOARD = {{0,1,2},{3,4,5},{6,7,8}};
+		int M = 0;//sum of the manhattan scores
+		System.out.printf("Manhattan Scores: ");
+
+		for(int i =0;i < size; i++){
+			for(int j = 0; j < size; j++){
+				int currentTile = board[i][j];
+				if(currentTile != 0){
+					int[] destination = rowAndCol(currentTile);
+					int k = destination[0]; int l = destination[1];
+					int m = Math.abs(i-k) + Math.abs(j-l);
+					M += m;
+					System.out.printf("%d, ", m);
+				}
+			}
+		}
+		
+		return M;
+	}
+	
 	//prints off the current board.
 	public String toString(){
 		String toReturn = "";
