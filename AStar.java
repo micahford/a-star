@@ -5,6 +5,7 @@ import java.util.Random;
 public class AStar {
 	final static int size = 3;
 	private int[][] board;
+	
 	public AStar(){
 		board = new int[size][size];
 		List<Integer> l = new ArrayList<Integer>();
@@ -16,6 +17,25 @@ public class AStar {
 			}
 		}
 	}
+	
+	public AStar(AStar a){
+		int[] order = a.orderBoard();
+		AStar a2 = new AStar(order);
+	}
+	
+	public AStar(int[] order){
+		board = new int[size][size];
+		List<Integer> l = new ArrayList<Integer>();
+		for(int i = 0; i<order.length; i++){
+			l.add(order[i]);
+		}
+		for(int i = 0; i< size; i++){
+			for(int j = 0; j < size; j++){
+				board[i][j] = l.get(i*size+j);
+			}
+		}
+	}
+	
 	//swaps the number n with the blank space (number 0)
 	public AStar moveSquare(int n, AStar a){
 		int rowNumber = 0; int colNumber = 0;
@@ -60,9 +80,25 @@ public class AStar {
 		int [] location = a.blankLoc(a);
 		int r=location[0];
 		int c=location[1];
-		
-		for (int i=0; i<4; i++){
-			
+		if (!isOutOfBounds(r-1,c,a)){
+			AStar move1 = new AStar(a);
+			moveSquare(move1.board[r-1][c],move1);
+			l.add(move1);
+		}
+		if (!isOutOfBounds(r,c+1,a)){
+			AStar move2 = new AStar(a);
+			moveSquare(move2.board[r][c+1],move2);
+			l.add(move2);
+		}
+		if (!isOutOfBounds(r+1,c,a)){
+			AStar move3 = new AStar(a);
+			moveSquare(move3.board[r+1][c],move3);
+			l.add(move3);
+		}
+		if (!isOutOfBounds(r,c-1,a)){
+			AStar move4 = new AStar(a);
+			moveSquare(move4.board[r][c-1],move4);
+			l.add(move4);
 		}
 		return l;
 	}
