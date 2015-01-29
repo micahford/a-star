@@ -1,0 +1,99 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.*;
+
+
+public class IDS {
+
+	public static void main(String[] args) throws FileNotFoundException {
+		int maxdepth = 2;
+		
+		Scanner scan = new Scanner(new File(maxdepth + ".txt"));
+		int[] order = new int[9];
+		order = stringToArray(scan.nextLine());
+
+		int nodesGenerated = 1;
+		int totalNodes = 1;
+		
+		for(int d = 1; d< 100 ;d++){
+			AStar a = new AStar(stringToArray("{4, 2, 5, 1, 6, 8, 7, 3, 0}"));
+			Set<Integer> closedSet = new HashSet<Integer>();
+			Stack<AStar> stack = new Stack<AStar>();
+			stack.push(a);
+			while(!stack.isEmpty()){
+				a = stack.pop();
+				if (a.getHash()==12345678){System.out.println("DONE." + totalNodes +" " + d); return;}
+				if(!closedSet.contains(a.getHash())){
+					closedSet.add(a.getHash());
+					//System.out.println("Hash adding to closed set: "+a.getHash());
+					List<AStar> possibleMoves = a.possMoves(a);
+					//totalNodes = totalNodes + possibleMoves.size();
+					for(AStar move : possibleMoves){
+						if(move.getCost() < d){
+							stack.push(move);
+							//System.out.println(move);
+							totalNodes ++;
+						}
+					}
+				}
+			}
+			
+			
+			//System.out.println(totalNodes);
+		}
+		System.out.printf("d = %d, total nodes: %d\n",maxdepth,totalNodes);
+		
+//		AStar a = new AStar(stringToArray("{3, 1, 0, 7, 5, 2, 4, 6, 8}"));
+//		Set<Integer> closedSet = new HashSet<Integer>();
+//		Stack<AStar> stack = new Stack<AStar>();
+//		stack.push(a);
+//		System.out.println("Depth: "+ 12);
+//		while(!stack.isEmpty()){
+//			a = stack.pop();
+//			//if(!closedSet.contains(a.getHash())){
+//				closedSet.add(a.getHash());
+//				System.out.println("Hash adding to closed set: "+a.getHash());
+//				List<AStar> possibleMoves = a.possMoves(a);
+//				totalNodes = totalNodes + possibleMoves.size();
+//				for(AStar move : possibleMoves){
+//					if(move.getCost()<12+1){
+//						stack.push(move);
+//						System.out.println(move);
+//						//totalNodes ++;
+//					}
+//				}
+//			//}
+//		}
+//		System.out.println(totalNodes);
+		
+	}
+
+	
+	private static int[] stringToArray(String s){
+		int[] toReturn = new int[9];
+		int counter =0;
+		for(int i = 0; i < s.length(); i++){
+			if (s.substring(i,i+1).matches("[0-9]")){
+				toReturn[counter] = Integer.parseInt(s.substring(i,i+1));
+				counter++;
+			}
+		}
+		return toReturn;
+	}
+
+	//print in nice array format.
+	private static String print(AStar a){
+		String toReturn="{";
+		for(int i =0; i<a.size; i++){
+			for(int j = 0; j < a.size; j++){
+				toReturn+= a.getBoard()[i][j] + ", ";
+			}
+		}
+		int length = toReturn.length();
+		toReturn = toReturn.substring(0, length-2) + "}";
+		return toReturn;
+	}
+	
+}
+
+
