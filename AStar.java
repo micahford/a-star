@@ -1,3 +1,4 @@
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -7,23 +8,19 @@ public class AStar implements Comparable<AStar> {
 	private int[][] board;
 	private int cost;
 	private int hash;
-	
 	public AStar(){
 		cost = 0;
 		board = new int[size][size];
 		List<Integer> l = new ArrayList<Integer>();
 		for(int i = 0; i<size*size; i ++){l.add(i);}
-		Collections.shuffle(l, new Random(42));
+		Collections.shuffle(l, new Random());
 		for(int i = 0; i< size; i++){
 			for(int j = 0; j < size; j++){
 				board[i][j] = l.get(i*size+j);
 			}
 		}
 		hash = this.hashval();
-
-	
 	}
-	
 	public AStar(int[] order){
 		board = new int[size][size];
 		List<Integer> l = new ArrayList<Integer>();
@@ -36,16 +33,11 @@ public class AStar implements Comparable<AStar> {
 			}
 		}
 		hash = hashval();
-
 	}
-	
-
-	
 	//swaps the number n with the blank space (number 0)
 	public AStar moveSquare(int n, AStar a){
 		int rowNumber = 0; int colNumber = 0;
 		int rowZero = 0; int colZero = 0;
-		
 		for(int i = 0; i < a.size; i++){
 			for (int j = 0; j < a.size; j++){
 				if(a.board[i][j]==0){
@@ -60,11 +52,9 @@ public class AStar implements Comparable<AStar> {
 		}
 		a.board[rowZero][colZero] = n;
 		a.board[rowNumber][colNumber] = 0;
-		
-		a.hash = this.hashCode();  //update the hashcode
+		a.hash = this.hashCode(); //update the hashcode
 		return a;
 	}
-	
 	//returns list containing coordinates of the blank space
 	private int[] blankLoc(AStar a){
 		int[] location = {-1,-1};
@@ -78,7 +68,6 @@ public class AStar implements Comparable<AStar> {
 		}
 		return location;
 	}
-		
 	//generates successor states
 	public List<AStar> possMoves(AStar a){
 		List<AStar> l= new ArrayList<AStar>();
@@ -114,7 +103,6 @@ public class AStar implements Comparable<AStar> {
 		}
 		return l;
 	}
-	
 	//checks if a location is out of bounds
 	public boolean isOutOfBounds(int r, int c, AStar a){
 		boolean isOutOfBounds=false;
@@ -126,7 +114,6 @@ public class AStar implements Comparable<AStar> {
 		}
 		return isOutOfBounds;
 	}
-	
 	//returns boolean whether the puzzle is solvable
 	public boolean isSolvable() {
 		int[] boardInOrder = this.orderBoard();
@@ -160,8 +147,7 @@ public class AStar implements Comparable<AStar> {
 		}
 		return boardInOrder;
 	}
-	
-		//this returns the h1 value for a given board, as defined by AIMA (the number of misplaced tiles)
+	//this returns the h1 value for a given board, as defined by AIMA (the number of misplaced tiles)
 	public int heuristic1(){
 		int[] CORRECT_ORDER = {0,1,2,3,4,5,6,7,8,9};
 		int[] current_order = this.orderBoard();
@@ -188,12 +174,10 @@ public class AStar implements Comparable<AStar> {
 		}
 		return rowCol;
 	}
-
 	//returns the h2 value for a given board, as defined by AIMA (manhatten score)
 	public int heuristic2(){
 		int M = 0;//sum of the manhattan scores
 		//System.out.printf("Manhattan Scores: ");
-
 		for(int i =0;i < size; i++){
 			for(int j = 0; j < size; j++){
 				int currentTile = board[i][j];
@@ -202,14 +186,12 @@ public class AStar implements Comparable<AStar> {
 					int k = destination[0]; int l = destination[1];
 					int m = Math.abs(i-k) + Math.abs(j-l);
 					M += m;
-				//	System.out.printf("%d, ", m);
+					// System.out.printf("%d, ", m);
 				}
 			}
 		}
-		
 		return M;
 	}
-	
 	//prints off the current board.
 	public String toString(){
 		String toReturn = "";
@@ -223,14 +205,15 @@ public class AStar implements Comparable<AStar> {
 		return toReturn;
 	}
 	
+	//@override
+	//change for different heuristics
 	public int compareTo(AStar a){
-		int heuristic = 2;
+		int heuristic = 1;
 		if (this.fValue(heuristic) > a.fValue(heuristic)) return 1;
 		else if (this.fValue(heuristic
 				) == a.fValue(heuristic)) return 0;
 		else return -1;
 	}
-	
 	public boolean equals(AStar a){
 		int[]a1 = this.orderBoard();
 		int[]a2 = a.orderBoard();
@@ -239,8 +222,7 @@ public class AStar implements Comparable<AStar> {
 		}
 		return true;
 	}
-	
-	//f(n) = g(n) + h(n)
+	//f(n) = g(n) + h(n);
 	public int fValue(int heuristic){
 		int h = 0;
 		int g = this.cost;
@@ -253,9 +235,11 @@ public class AStar implements Comparable<AStar> {
 	public int getCost(){
 		return this.cost;
 	}
-	
 	public int getHash(){
 		return hashval();
+	}
+	public int[][]getBoard(){
+		return this.board;
 	}
 	
 	
@@ -268,7 +252,4 @@ public class AStar implements Comparable<AStar> {
 		}
 		return Integer.parseInt(val);
 	}
-
-
-	
 }
