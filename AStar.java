@@ -53,8 +53,8 @@ public class AStar {
 				}
 			}
 		}
-		board[rowZero][colZero] = n;
-		board[rowNumber][colNumber] = 0;
+		a.board[rowZero][colZero] = n;
+		a.board[rowNumber][colNumber] = 0;
 		return a;
 	}
 	
@@ -80,36 +80,45 @@ public class AStar {
 		int [] location = a.blankLoc(a);
 		int r=location[0];
 		int c=location[1];
+		int [] currentBoard = a.orderBoard();
 		if (!isOutOfBounds(r-1,c,a)){
-			AStar move1 = new AStar(a);
-			moveSquare(move1.board[r-1][c],move1);
+			AStar move1 = new AStar(currentBoard);
+			System.out.println(move1.board[r-1][c]);
+			move1=moveSquare(move1.board[r-1][c],move1);
 			l.add(move1);
 		}
 		if (!isOutOfBounds(r,c+1,a)){
-			AStar move2 = new AStar(a);
-			moveSquare(move2.board[r][c+1],move2);
+			AStar move2 = new AStar(currentBoard);
+			System.out.println(move2.board[r][c+1]);
+			move2=moveSquare(move2.board[r][c+1],move2);
 			l.add(move2);
 		}
 		if (!isOutOfBounds(r+1,c,a)){
-			AStar move3 = new AStar(a);
-			moveSquare(move3.board[r+1][c],move3);
+			AStar move3 = new AStar(currentBoard);
+			move3=moveSquare(move3.board[r+1][c],move3);
 			l.add(move3);
 		}
 		if (!isOutOfBounds(r,c-1,a)){
-			AStar move4 = new AStar(a);
-			moveSquare(move4.board[r][c-1],move4);
+			System.out.println("here4");
+			AStar move4 = new AStar(currentBoard);
+			move4=moveSquare(move4.board[r][c-1],move4);
 			l.add(move4);
 		}
+		//
+	//	for (int j=0; j<l.size(); j++){
+	//		System.out.println(l.get(j));
+	//	}
+		//
 		return l;
 	}
 	
 	//checks if a location is out of bounds
-	private boolean isOutOfBounds(int r, int c, AStar a){
+	public boolean isOutOfBounds(int r, int c, AStar a){
 		boolean isOutOfBounds=false;
-		if ((r+1>a.size) || (r-1<a.size)){
+		if ((r>a.size) || (r<0)){
 			isOutOfBounds=true;
 		}
-		else if ((c+1>a.size) || (c-1<a.size)){
+		else if ((c>a.size) || (c<0)){
 			isOutOfBounds=true;
 		}
 		return isOutOfBounds;
