@@ -78,14 +78,12 @@ public class AStar implements Comparable<AStar> {
 		if (!isOutOfBounds(r-1,c,a)){
 			AStar move1 = new AStar(currentBoard);
 			move1.cost = a.cost + 1;
-			//System.out.println(move1.board[r-1][c]);
 			move1=moveSquare(move1.board[r-1][c],move1);
 			l.add(move1);
 		}
 		if (!isOutOfBounds(r,c+1,a)){
 			AStar move2 = new AStar(currentBoard);
 			move2.cost = a.cost + 1;
-			//System.out.println(move2.board[r][c+1]);
 			move2=moveSquare(move2.board[r][c+1],move2);
 			l.add(move2);
 		}
