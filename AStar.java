@@ -2,25 +2,26 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-public class AStar {
+public class AStar implements Comparable<AStar> {
 	final static int size = 3;
 	private int[][] board;
+	private int cost;
+	private int hash;
 	
 	public AStar(){
+		cost = 0;
 		board = new int[size][size];
 		List<Integer> l = new ArrayList<Integer>();
 		for(int i = 0; i<size*size; i ++){l.add(i);}
-		Collections.shuffle(l, new Random(4));
+		Collections.shuffle(l, new Random(42));
 		for(int i = 0; i< size; i++){
 			for(int j = 0; j < size; j++){
 				board[i][j] = l.get(i*size+j);
 			}
 		}
-	}
+		hash = this.hashval();
+
 	
-	public AStar(AStar a){
-		int[] order = a.orderBoard();
-		AStar a2 = new AStar(order);
 	}
 	
 	public AStar(int[] order){
@@ -34,7 +35,11 @@ public class AStar {
 				board[i][j] = l.get(i*size+j);
 			}
 		}
+		hash = hashval();
+
 	}
+	
+
 	
 	//swaps the number n with the blank space (number 0)
 	public AStar moveSquare(int n, AStar a){
@@ -55,12 +60,14 @@ public class AStar {
 		}
 		a.board[rowZero][colZero] = n;
 		a.board[rowNumber][colNumber] = 0;
+		
+		a.hash = this.hashCode();  //update the hashcode
 		return a;
 	}
 	
 	//returns list containing coordinates of the blank space
 	private int[] blankLoc(AStar a){
-		int[] location = null;
+		int[] location = {-1,-1};
 		for (int i=0; i<a.size; i++){
 			for (int j=0; j<a.size; j++){
 				if (a.board[i][j]==0){
@@ -71,9 +78,7 @@ public class AStar {
 		}
 		return location;
 	}
-	
-	
-	
+		
 	//generates successor states
 	public List<AStar> possMoves(AStar a){
 		List<AStar> l= new ArrayList<AStar>();
@@ -83,42 +88,40 @@ public class AStar {
 		int [] currentBoard = a.orderBoard();
 		if (!isOutOfBounds(r-1,c,a)){
 			AStar move1 = new AStar(currentBoard);
-			System.out.println(move1.board[r-1][c]);
+			move1.cost = a.cost + 1;
+			//System.out.println(move1.board[r-1][c]);
 			move1=moveSquare(move1.board[r-1][c],move1);
 			l.add(move1);
 		}
 		if (!isOutOfBounds(r,c+1,a)){
 			AStar move2 = new AStar(currentBoard);
-			System.out.println(move2.board[r][c+1]);
+			move2.cost = a.cost + 1;
+			//System.out.println(move2.board[r][c+1]);
 			move2=moveSquare(move2.board[r][c+1],move2);
 			l.add(move2);
 		}
 		if (!isOutOfBounds(r+1,c,a)){
 			AStar move3 = new AStar(currentBoard);
+			move3.cost = a.cost + 1;
 			move3=moveSquare(move3.board[r+1][c],move3);
 			l.add(move3);
 		}
 		if (!isOutOfBounds(r,c-1,a)){
-			System.out.println("here4");
 			AStar move4 = new AStar(currentBoard);
+			move4.cost = a.cost + 1;
 			move4=moveSquare(move4.board[r][c-1],move4);
 			l.add(move4);
 		}
-		//
-	//	for (int j=0; j<l.size(); j++){
-	//		System.out.println(l.get(j));
-	//	}
-		//
 		return l;
 	}
 	
 	//checks if a location is out of bounds
 	public boolean isOutOfBounds(int r, int c, AStar a){
 		boolean isOutOfBounds=false;
-		if ((r>a.size) || (r<0)){
+		if ((r>a.size-1) || (r<0)){
 			isOutOfBounds=true;
 		}
-		else if ((c>a.size) || (c<0)){
+		else if ((c>size-1) || (c<0)){
 			isOutOfBounds=true;
 		}
 		return isOutOfBounds;
@@ -137,7 +140,7 @@ public class AStar {
 						if(boardInOrder[j]!= 0) n++;
 					}
 				}
-				System.out.print(n + " ");
+				//System.out.print(n + " ");
 				N = N + n;
 			}
 			else if (boardInOrder[i]==0) {e = i+1;}
@@ -170,8 +173,6 @@ public class AStar {
 				}
 			}
 		}
-
-
 		return n;
 	}
 	//finds the row and column for correct location of n.
@@ -190,9 +191,8 @@ public class AStar {
 
 	//returns the h2 value for a given board, as defined by AIMA (manhatten score)
 	public int heuristic2(){
-		int[][] CORRECT_BOARD = {{0,1,2},{3,4,5},{6,7,8}};
 		int M = 0;//sum of the manhattan scores
-		System.out.printf("Manhattan Scores: ");
+		//System.out.printf("Manhattan Scores: ");
 
 		for(int i =0;i < size; i++){
 			for(int j = 0; j < size; j++){
@@ -202,7 +202,7 @@ public class AStar {
 					int k = destination[0]; int l = destination[1];
 					int m = Math.abs(i-k) + Math.abs(j-l);
 					M += m;
-					System.out.printf("%d, ", m);
+				//	System.out.printf("%d, ", m);
 				}
 			}
 		}
@@ -222,4 +222,53 @@ public class AStar {
 		}
 		return toReturn;
 	}
+	
+	public int compareTo(AStar a){
+		int heuristic = 2;
+		if (this.fValue(heuristic) > a.fValue(heuristic)) return 1;
+		else if (this.fValue(heuristic
+				) == a.fValue(heuristic)) return 0;
+		else return -1;
+	}
+	
+	public boolean equals(AStar a){
+		int[]a1 = this.orderBoard();
+		int[]a2 = a.orderBoard();
+		for(int i = 0; i < a1.length; i++){
+			if(a1[i]!=a2[i]) {return false;}
+		}
+		return true;
+	}
+	
+	//f(n) = g(n) + h(n)
+	public int fValue(int heuristic){
+		int h = 0;
+		int g = this.cost;
+		if(heuristic == 1){return g + this.heuristic1();}
+		else if(heuristic == 2){return g + this.heuristic2();}
+		else {
+			System.out.println("ERROR. use h1 or h2");
+			return 999;}
+	}
+	public int getCost(){
+		return this.cost;
+	}
+	
+	public int getHash(){
+		return hashval();
+	}
+	
+	
+	private int hashval(){
+		String val= "";
+		for(int i = 0; i<size; i++){
+			for(int j = 0; j < size; j++){
+				val+=this.board[i][j];
+			}
+		}
+		return Integer.parseInt(val);
+	}
+
+
+	
 }
