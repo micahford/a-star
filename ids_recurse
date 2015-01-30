@@ -1,0 +1,70 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Scanner;
+import java.util.Set;
+
+
+public class IDS_recurse {
+	static int nodesGenerated = 0;
+	static int boardsSolved= 0;
+	static Set<Integer> closedSet;
+	static boolean isSolved;
+	
+	public static void main(String args[]) throws FileNotFoundException{
+		int d = 2;
+		
+		Scanner scan = new Scanner(new File(d + ".txt"));
+		int[] order = new int[9];
+		
+		for(int n = 0; n < 100; n++){
+			order = stringToArray(scan.nextLine());
+			AStar current = new AStar(order);
+
+			for (int i = 0; i < d + 1; i++) {
+				isSolved = false;
+				closedSet = new HashSet<Integer>();
+				DLS(current, 12345678, i);
+			}
+		}
+		closedSet = new HashSet<Integer>();
+	//	DLS(astar, 12345678, 8);
+		
+		System.out.println("Number of boards solved: " + boardsSolved);
+		System.out.println("Average Nodes generated " + (float)nodesGenerated/boardsSolved);
+		
+	}
+	
+	public static void DLS(AStar a, int solution, int depth){
+		if(depth >=0) {
+			if (a.getHash() == solution) {
+				System.out.println("DONE. " + nodesGenerated + " depth: " + depth);
+				boardsSolved++;
+				isSolved = true;
+				return;
+			}
+			if(isSolved) return;
+			closedSet.add(a.getHash());
+			List<AStar> possibleMoves = a.possMoves(a);
+			for(AStar move : possibleMoves){
+				//if(!closedSet.contains(move.getHash())){
+					nodesGenerated++;
+					DLS(move, solution, depth-1 );
+				//}
+			}
+		}
+	}
+	private static int[] stringToArray(String s){
+		int[] toReturn = new int[9];
+		int counter =0;
+		for(int i = 0; i < s.length(); i++){
+			if (s.substring(i,i+1).matches("[0-9]")){
+				toReturn[counter] = Integer.parseInt(s.substring(i,i+1));
+				counter++;
+			}
+		}
+		return toReturn;
+	}
+	
+}
